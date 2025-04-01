@@ -3,18 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
-#include "GhostCharacter.generated.h"
-
+#include "GameFramework/Pawn.h"
+#include "BasePossessable.generated.h"
 
 UCLASS()
-class GAMEJAMPROJECT_API AGhostCharacter : public ACharacter
+class GAMEJAMPROJECT_API ABasePossessable : public APawn
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
-	AGhostCharacter();
+	// Sets default values for this pawn's properties
+	ABasePossessable();
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,4 +26,5 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	
 };
