@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GhostCharacter.generated.h"
 
+
 UCLASS()
 class GAMEJAMPROJECT_API AGhostCharacter : public ACharacter
 {
