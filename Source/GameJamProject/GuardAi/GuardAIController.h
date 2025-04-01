@@ -10,8 +10,6 @@ class UAISenseConfig_Sight;
 class UAISenseConfig_Hearing;
 struct FAIStimulus;
 
-DECLARE_LOG_CATEGORY_EXTERN(LogAI, Log, All);
-
 UCLASS()
 class GAMEJAMPROJECT_API AGuardAIController : public AAIController
 {

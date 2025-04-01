@@ -9,8 +9,6 @@
 #include "Perception/AISenseConfig_Hearing.h"
 #include "Perception/AISenseConfig_Sight.h"
 
-DEFINE_LOG_CATEGORY(LogAI);
-
 AGuardAIController::AGuardAIController(const FObjectInitializer& ObjectInitializer):
 	Super(ObjectInitializer)
 {

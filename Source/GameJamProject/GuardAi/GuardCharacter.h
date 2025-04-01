@@ -25,7 +25,9 @@ public:
 	UBehaviorTree* GetBehaviorTree() const;
 
 	APathPoints* GetPatrolPath() const;
-	
+
+	APathPoints* GetDropOffLocation() const;
+
 	UAnimMontage* GetAnimMontage() const;
 
 	int32 GetFearLevel() const;
@@ -48,7 +50,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Animation", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* m_pAnimMontage{nullptr};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI", meta = (AllowPrivateAccess = "true"))
+	APathPoints* m_pDropOffLocation{nullptr};
+
 	int32 m_FearLevel{};
+
+	bool FearHastStruck{};
+	bool DoItOnce{};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Behaviour", meta = (AllowPrivateAccess = "true"))
 	int32 m_MaxFearLevel{10};

@@ -26,13 +26,8 @@ class GAMEJAMPROJECT_API IInteractable
 public:
 	virtual void Interact() = 0;
 
-	
-	
-
-private:
-
-
 protected:
 
+private:
 	
 };
