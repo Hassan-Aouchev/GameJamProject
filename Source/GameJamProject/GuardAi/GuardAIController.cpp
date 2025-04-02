@@ -49,7 +49,7 @@ void AGuardAIController::SetupHearingSystem()
 	{
 		SetPerceptionComponent(*m_pPerceptionComponent);
 		
-		m_pHearingConfig->HearingRange = 1500.0f;
+		m_pHearingConfig->HearingRange = 300.0f;
 		m_pHearingConfig->SetMaxAge(5.0f);
 		m_pHearingConfig->DetectionByAffiliation.bDetectEnemies = true;
 		m_pHearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
