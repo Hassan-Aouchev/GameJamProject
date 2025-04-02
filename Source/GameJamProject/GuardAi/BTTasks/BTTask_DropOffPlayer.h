@@ -4,21 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
-#include "BTTask_FindDropOffPoint.generated.h"
+#include "BTTask_DropOffPlayer.generated.h"
 
 UCLASS()
-class GAMEJAMPROJECT_API UBTTask_FindDropOffPoint : public UBTTask_BlackboardBase
+class GAMEJAMPROJECT_API UBTTask_DropOffPlayer : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
 public:
-	explicit UBTTask_FindDropOffPoint(const FObjectInitializer& ObjectInitializer);
+	explicit UBTTask_DropOffPlayer(const FObjectInitializer& ObjectInitializer);
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 private:
 	UPROPERTY(EditAnywhere, Category="BlackBoard", meta=(AllowPrivateAccess=true))
-	FBlackboardKeySelector m_DropOffPathVectorKey;
+	FBlackboardKeySelector m_RelevantPlayer;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI",meta=(AllowPrivateAccess=true))
-	bool m_hunter{};
+	UPROPERTY(EditAnywhere, Category = "BlackBoard")
+	FBlackboardKeySelector m_IsPlayerPickedUp;
 };

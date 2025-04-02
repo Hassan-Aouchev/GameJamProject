@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "GuardCharacter.generated.h"
 
+class AGuardAIController;
+class AGhostCharacter;
 class APlayerCharacter;
 class APathPoints;
 class UBehaviorTree;
@@ -27,6 +29,8 @@ public:
 	APathPoints* GetPatrolPath() const;
 
 	APathPoints* GetDropOffLocation() const;
+	
+	APathPoints* GetDropOffLocationHunter() const;
 
 	UAnimMontage* GetAnimMontage() const;
 
@@ -36,6 +40,7 @@ public:
 	bool IsScared() const;
 
 	bool GetSmoothOperator();
+	void Stun();
 
 protected:
 	virtual void BeginPlay() override;
@@ -53,6 +58,15 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI", meta = (AllowPrivateAccess = "true"))
 	APathPoints* m_pDropOffLocation{nullptr};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI", meta = (AllowPrivateAccess = "true"))
+	APathPoints* m_pDropOffLocationHunter{nullptr};
+
+	UPROPERTY()
+	AGhostCharacter* m_Player{nullptr};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI", meta = (AllowPrivateAccess = "true"))
+	float DetectionRadius = 1000.0f;
+	
 	int32 m_FearLevel{};
 
 	bool FearHastStruck{};
@@ -65,21 +79,44 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Behaviour", meta = (AllowPrivateAccess = "true"))
 	bool m_SmoothOperator{};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Behaviour", meta = (AllowPrivateAccess = "true"))
+	bool m_IsHunter{};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Behaviour", meta = (AllowPrivateAccess = "true"))
 	float m_Vicinity{300.f};
 
 	FTimerHandle FearCooldownTimerHandle;
 	bool bCanSpreadFear = true;
+	bool bHasSeenPlayer{};
+
+	UPROPERTY()
+	AGuardAIController* AIController{nullptr};
 	
 	UPROPERTY()
 	UCapsuleComponent* m_SpreadFearCapsule{nullptr};
+	
+	UPROPERTY()
+	UCapsuleComponent* m_PlayerDetectedCapsule{nullptr};
 
 	UFUNCTION()
-	void OnCapsuleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+	void OnCapsuleOverlapFear(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, 
 		const FHitResult& SweepResult);
 
+	UFUNCTION()
+	void OnCapsuleOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, 
+		const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void OnOverlapEndPlayer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+					  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 	void ResetFearCooldown();
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 
 };

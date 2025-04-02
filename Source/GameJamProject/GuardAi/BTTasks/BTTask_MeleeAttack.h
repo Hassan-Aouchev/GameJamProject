@@ -19,12 +19,11 @@ public:
 	explicit UBTTask_MeleeAttack(const FObjectInitializer& ObjectInitializer);
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
 private:
 	UPROPERTY(EditAnywhere, Category="BlackBoard", meta=(AllowPrivateAccess=true))
 	FBlackboardKeySelector m_PlayerToAttack;
-
-	UPROPERTY(EditAnywhere, Category="BlackBoard", meta=(AllowPrivateAccess=true))
-	FBlackboardKeySelector m_IsEnemyNear;
 	
 	UPROPERTY(EditAnywhere, blueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	float m_MeleeRange{2.5f};

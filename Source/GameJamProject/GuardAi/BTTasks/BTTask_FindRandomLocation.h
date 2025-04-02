@@ -24,7 +24,4 @@ private:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Search",meta=(AllowPrivateAccess=true))
 	FBlackboardKeySelector m_SearchLocation;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Search",meta=(AllowPrivateAccess=true))
-	FBlackboardKeySelector m_Index;
 };

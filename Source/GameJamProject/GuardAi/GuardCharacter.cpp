@@ -1,17 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "GuardCharacter.h"
-
 #include "GuardAIController.h"
-#include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameJamProject/GhostCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 AGuardCharacter::AGuardCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	m_SpreadFearCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
+	m_SpreadFearCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("SpreadFearCapsule"));
 	m_SpreadFearCapsule->InitCapsuleSize(m_Vicinity, m_Vicinity);
 	m_SpreadFearCapsule->SetCollisionProfileName(TEXT("Pawn"));
 	m_SpreadFearCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -20,17 +20,38 @@ AGuardCharacter::AGuardCharacter()
 	m_SpreadFearCapsule->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	
 	m_SpreadFearCapsule->SetupAttachment(GetMesh());
-	m_SpreadFearCapsule->OnComponentBeginOverlap.AddDynamic(this, &AGuardCharacter::OnCapsuleOverlap);
+	
+	m_PlayerDetectedCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("PlayerDetectedCapsule"));
+	m_PlayerDetectedCapsule->InitCapsuleSize(DetectionRadius, DetectionRadius);
+	m_PlayerDetectedCapsule->SetCollisionProfileName(TEXT("Pawn"));
+	m_PlayerDetectedCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	m_PlayerDetectedCapsule->SetCollisionObjectType(ECC_WorldDynamic);
+	m_PlayerDetectedCapsule->SetCollisionResponseToAllChannels(ECR_Ignore);
+	m_PlayerDetectedCapsule->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	
+	m_PlayerDetectedCapsule->SetupAttachment(GetMesh());
 }
 
 void AGuardCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+    
+	m_SpreadFearCapsule->OnComponentBeginOverlap.AddDynamic(this, &AGuardCharacter::OnCapsuleOverlapFear);
+	m_PlayerDetectedCapsule->OnComponentBeginOverlap.AddDynamic(this, &AGuardCharacter::OnCapsuleOverlapPlayer);
+	m_PlayerDetectedCapsule->OnComponentEndOverlap.AddDynamic(this, &AGuardCharacter::OnOverlapEndPlayer);
+    
+	m_Player = Cast<AGhostCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	AIController = Cast<AGuardAIController>(GetController());
+
+	AIController->GetBlackboardComponent()->SetValueAsObject(FName("Player"), m_Player);
 }
 
-void AGuardCharacter::OnCapsuleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void AGuardCharacter::OnCapsuleOverlapFear(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OverlappedComponent != m_SpreadFearCapsule)
+		return;
+	
 	if (OtherActor && OtherActor != this && bCanSpreadFear && m_FearLevel >= (m_MaxFearLevel / 2))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Guard capsule overlapped with: %s"), *OtherActor->GetName());
@@ -56,9 +77,54 @@ void AGuardCharacter::OnCapsuleOverlap(UPrimitiveComponent* OverlappedComponent,
 	}
 }
 
+void AGuardCharacter::OnCapsuleOverlapPlayer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!OtherActor || OtherActor == this || !m_Player)
+		return;
+        
+	if (OverlappedComponent != m_PlayerDetectedCapsule)
+		return;
+        
+	if (m_Player == Cast<AGhostCharacter>(OtherActor))
+	{
+		if (AIController && AIController->GetBlackboardComponent() && m_IsHunter)
+		{
+			AIController->GetBlackboardComponent()->SetValueAsBool(FName("HasSeenGhost"), true);
+			AIController->GetBlackboardComponent()->SetValueAsBool(FName("IsInvestigating"), false);
+			bHasSeenPlayer = true;
+		}
+	}
+}
+
+void AGuardCharacter::OnOverlapEndPlayer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (!OtherActor || OtherActor == this || !m_Player)
+		return;
+        
+	if (OverlappedComponent != m_PlayerDetectedCapsule)
+		return;
+        
+	if (m_Player == Cast<AGhostCharacter>(OtherActor))
+	{
+		if (AIController && AIController->GetBlackboardComponent() && m_IsHunter)
+		{
+			AIController->GetBlackboardComponent()->SetValueAsBool(FName("HasSeenGhost"), false);
+			AIController->GetBlackboardComponent()->SetValueAsBool(FName("IsInvestigating"), true);
+			bHasSeenPlayer = false;
+		}
+	}
+}
+
 void AGuardCharacter::ResetFearCooldown()
 {
 	bCanSpreadFear = true;
+}
+
+void AGuardCharacter::Stun()
+{
+	AIController->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), true);
 }
 
 void AGuardCharacter::Tick(float DeltaTime)
@@ -72,12 +138,16 @@ void AGuardCharacter::Tick(float DeltaTime)
 	
 	if(FearHastStruck && !DoItOnce)
 	{
-		AGuardAIController* AIController = Cast<AGuardAIController>(GetController());
 		if (AIController && AIController->GetBlackboardComponent())
 		{
 			AIController->GetBlackboardComponent()->SetValueAsBool(FName("FearHasStruck"), true);
 		}
 		DoItOnce = true;
+	}
+
+	if(bHasSeenPlayer)
+	{
+		AIController->GetBlackboardComponent()->SetValueAsVector(FName("CurrentLocation"), m_Player->GetActorLocation());
 	}
 
 	FVector TextLocation = GetActorLocation() + FVector(0.f, 0.f, 100.f); // Position above head
@@ -90,6 +160,11 @@ void AGuardCharacter::Tick(float DeltaTime)
 APathPoints* AGuardCharacter::GetDropOffLocation() const
 {
 	return m_pDropOffLocation;
+}
+
+APathPoints* AGuardCharacter::GetDropOffLocationHunter() const
+{
+	return m_pDropOffLocationHunter;
 }
 
 void AGuardCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -131,3 +206,27 @@ bool AGuardCharacter::GetSmoothOperator()
 {
 	return m_SmoothOperator;
 }
+
+#if WITH_EDITOR
+void AGuardCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	FName PropertyName = PropertyChangedEvent.GetPropertyName();
+    
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AGuardCharacter, m_Vicinity))
+	{
+		if (m_SpreadFearCapsule)
+		{
+			m_SpreadFearCapsule->SetCapsuleSize(m_Vicinity, m_Vicinity);
+		}
+	}
+	else if (PropertyName == GET_MEMBER_NAME_CHECKED(AGuardCharacter, DetectionRadius))
+	{
+		if (m_PlayerDetectedCapsule)
+		{
+			m_PlayerDetectedCapsule->SetCapsuleSize(DetectionRadius, DetectionRadius);
+		}
+	}
+}
+#endif

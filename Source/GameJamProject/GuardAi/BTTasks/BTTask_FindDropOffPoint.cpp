@@ -27,9 +27,18 @@ EBTNodeResult::Type UBTTask_FindDropOffPoint::ExecuteTask(UBehaviorTreeComponent
 			
 			if (EnemyCharacter)
 			{
-				const FVector Point		{EnemyCharacter->GetDropOffLocation()->GetPathPoint(0)};
+				FVector Point	{};
 
-				const UE::Math::TVector<double> GlobalPoint		{EnemyCharacter->GetDropOffLocation()->GetActorTransform().TransformPosition(Point)};
+				if(m_hunter)
+				{
+					Point	= EnemyCharacter->GetDropOffLocationHunter()->GetPathPoint(0);
+				}
+				else
+				{
+					Point	= EnemyCharacter->GetDropOffLocation()->GetPathPoint(0);
+				}
+
+				const UE::Math::TVector<double> GlobalPoint	{EnemyCharacter->GetDropOffLocation()->GetActorTransform().TransformPosition(Point)};
 				
 				BlackboardComponent->SetValueAsVector(m_DropOffPathVectorKey.SelectedKeyName, GlobalPoint);
 				
