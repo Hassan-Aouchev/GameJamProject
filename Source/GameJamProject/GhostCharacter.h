@@ -34,7 +34,10 @@ public:
 
 	bool GetIsBeingCaptured() const;
 	bool GetHasWon() const;
-
+	
+	UFUNCTION(BlueprintCallable, Category = "Ghost")
+	void IncreaseResistance();
+	
 private:
 	float TugOfWarStrength{};  // Player's resistance level
 	float CaptureProgress{};   // AI's capture progress
@@ -43,6 +46,5 @@ private:
 
 	FTimerHandle CaptureTimerHandle;  // Timer for continuous AI pulling
 
-	void IncreaseResistance();  // Called when player presses the button
 	void UpdateCaptureProgress(AGuardCharacter* GuardAI); // Called every second during capture
 };

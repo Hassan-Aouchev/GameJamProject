@@ -73,8 +73,6 @@ void AGhostCharacter::UpdateCaptureProgress(AGuardCharacter* GuardAI)
 void AGhostCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAction("ResistCapture", IE_Pressed, this, &AGhostCharacter::IncreaseResistance);
 }
 
 // Called every frame
