@@ -63,13 +63,12 @@ void AGuardCharacter::OnCapsuleOverlapFear(UPrimitiveComponent* OverlappedCompon
 			{
 				if(!NPC->GetSmoothOperator() || NPC->m_FearLevel >= (NPC->m_MaxFearLevel / 2))
 				{
-					NPC->AddFearLevel(1 + m_HeardAmount);
+					NPC->AddFearLevel(1);
 				}
 				else
 				{
-					this->AddFearLevel(-1 - m_HeardAmount);
+					this->AddFearLevel(-1);
 				}
-				++m_HeardAmount;
 			}
 		}
 
@@ -128,6 +127,14 @@ void AGuardCharacter::Stun()
 	AIController->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), true);
 }
 
+void AGuardCharacter::SetPossessed(bool setValue)
+{
+	if (!m_IsHunter)
+	{
+		bPossessed = setValue;
+	}
+}
+
 TArray<FName> AGuardCharacter::GetFearNames() const
 {
 	return Fears;
@@ -159,32 +166,7 @@ void AGuardCharacter::Tick(float DeltaTime)
 	FVector TextLocation = GetActorLocation() + FVector(0.f, 0.f, 100.f); // Position above head
 	FString FearText = FString::Printf(TEXT("Fear: %d"), m_FearLevel);
 
-	// Draw text above the character
 	DrawDebugString(GetWorld(), TextLocation, FearText, nullptr, FColor::Red, 0.f, true);
-
-	UPathFollowingComponent* PathFollowingComp = AIController->GetPathFollowingComponent();
-	if (!PathFollowingComp) return;
-
-	// Get the AI’s current navigation path
-	const FNavPathSharedPtr CurrentPath = PathFollowingComp->GetPath();
-	if (!CurrentPath.IsValid()) return;
-
-	// Correctly extract PathPoints
-	const TArray<FNavPathPoint>& PathPoints = CurrentPath->GetPathPoints();
-	if (PathPoints.Num() < 2) return;
-
-	// Draw the path using BLUE lines
-	for (int32 i = 0; i < PathPoints.Num() - 1; i++)
-	{
-		FVector Start = PathPoints[i].Location;  // Extract Location
-		FVector End = PathPoints[i + 1].Location;
-
-		DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 0.1f, 0, 3.0f);
-	}
-
-	// Draw a RED sphere at the final destination
-	FVector FinalDestination = PathPoints.Last().Location;
-	DrawDebugSphere(GetWorld(), FinalDestination, 25.0f, 12, FColor::Red, false, 0.1f, 0, 3.0f);
 }
 
 APathPoints* AGuardCharacter::GetDropOffLocation() const

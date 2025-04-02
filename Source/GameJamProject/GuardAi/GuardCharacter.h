@@ -42,6 +42,9 @@ public:
 	bool GetSmoothOperator();
 	void Stun();
 
+	UFUNCTION(BlueprintCallable, Category = "Ghost")
+	void SetPossessed(bool setValue);
+
 	TArray<FName> GetFearNames() const;
 
 protected:
@@ -79,9 +82,7 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Behaviour", meta = (AllowPrivateAccess = "true"))
 	int32 m_MaxFearLevel{10};
-
-	int32 m_HeardAmount{};
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Behaviour", meta = (AllowPrivateAccess = "true"))
 	bool m_SmoothOperator{};
 
@@ -119,6 +120,8 @@ private:
 					  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	void ResetFearCooldown();
+
+	bool bPossessed{};
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
