@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameJamProject/GhostCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Navigation/PathFollowingComponent.h"
 
 AGuardCharacter::AGuardCharacter()
 {
@@ -127,6 +128,11 @@ void AGuardCharacter::Stun()
 	AIController->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), true);
 }
 
+TArray<FName> AGuardCharacter::GetFearNames() const
+{
+	return Fears;
+}
+
 void AGuardCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -155,6 +161,30 @@ void AGuardCharacter::Tick(float DeltaTime)
 
 	// Draw text above the character
 	DrawDebugString(GetWorld(), TextLocation, FearText, nullptr, FColor::Red, 0.f, true);
+
+	UPathFollowingComponent* PathFollowingComp = AIController->GetPathFollowingComponent();
+	if (!PathFollowingComp) return;
+
+	// Get the AI’s current navigation path
+	const FNavPathSharedPtr CurrentPath = PathFollowingComp->GetPath();
+	if (!CurrentPath.IsValid()) return;
+
+	// Correctly extract PathPoints
+	const TArray<FNavPathPoint>& PathPoints = CurrentPath->GetPathPoints();
+	if (PathPoints.Num() < 2) return;
+
+	// Draw the path using BLUE lines
+	for (int32 i = 0; i < PathPoints.Num() - 1; i++)
+	{
+		FVector Start = PathPoints[i].Location;  // Extract Location
+		FVector End = PathPoints[i + 1].Location;
+
+		DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 0.1f, 0, 3.0f);
+	}
+
+	// Draw a RED sphere at the final destination
+	FVector FinalDestination = PathPoints.Last().Location;
+	DrawDebugSphere(GetWorld(), FinalDestination, 25.0f, 12, FColor::Red, false, 0.1f, 0, 3.0f);
 }
 
 APathPoints* AGuardCharacter::GetDropOffLocation() const

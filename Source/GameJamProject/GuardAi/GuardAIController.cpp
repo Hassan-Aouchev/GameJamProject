@@ -5,9 +5,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AIPerceptionComponent.h"
-#include "Perception/AIPerceptionTypes.h"
 #include "Perception/AISenseConfig_Hearing.h"
-#include "Perception/AISenseConfig_Sight.h"
 
 AGuardAIController::AGuardAIController(const FObjectInitializer& ObjectInitializer):
 	Super(ObjectInitializer)
@@ -15,6 +13,11 @@ AGuardAIController::AGuardAIController(const FObjectInitializer& ObjectInitializ
 	m_pPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component"));
 	
 	SetupHearingSystem();
+}
+
+void AGuardAIController::ResetHeardStimuli()
+{
+	m_PreviouslyHeardStimuli.Empty();
 }
 
 void AGuardAIController::OnPossess(APawn* InPawn)
@@ -67,29 +70,53 @@ void AGuardAIController::OnTargetDetected(AActor* Actor, const FAIStimulus stimu
 	
 	if (stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
 	{
-		float newSoundVolume = stimulus.Strength;
-		
-		if (newSoundVolume > m_CurrentSoundVolume)
+		TArray<FName> fearNames = m_ControlledEnemy->GetFearNames();
+
+		// Check if we've already processed this stimulus tag
+		if (!m_PreviouslyHeardStimuli.Contains(stimulus.Tag))
 		{
-			m_SoundLocation = stimulus.StimulusLocation;
-        
-			m_CurrentSoundVolume = newSoundVolume;
-        
-			if (Blackboard)
+			// Add to our set of heard stimuli
+			m_PreviouslyHeardStimuli.Add(stimulus.Tag);
+    
+			if (fearNames.Contains(stimulus.Tag))
 			{
-				Blackboard->SetValueAsBool("CanHearSomething", false);
-				Blackboard->SetValueAsBool("IsInvestigating", false);
-				
-				Blackboard->SetValueAsVector("LastHeardLocation", m_SoundLocation);
-
-				AGuardCharacter* NPC{Cast<AGuardCharacter>(GetPawn())};
-
-				int32 RandomFearIncrease = FMath::RandRange(1, 3 + m_HeardTimes);
-				NPC->AddFearLevel(RandomFearIncrease);
-				
-				Blackboard->SetValueAsBool("CanHearSomething", true);
-
-				++m_HeardTimes;
+				// Major fear reaction - this is something the guard specifically fears
+				float newSoundVolume = stimulus.Strength;
+				m_SoundLocation = stimulus.StimulusLocation;
+				m_CurrentSoundVolume = newSoundVolume;
+     
+				if (Blackboard)
+				{
+					Blackboard->SetValueAsBool("CanHearSomething", false);
+					Blackboard->SetValueAsBool("IsInvestigating", false);
+    
+					Blackboard->SetValueAsVector("LastHeardLocation", m_SoundLocation);
+					AGuardCharacter* NPC{Cast<AGuardCharacter>(GetPawn())};
+					int32 RandomFearIncrease = FMath::RandRange(2, 4);
+					NPC->AddFearLevel(RandomFearIncrease);
+    
+					Blackboard->SetValueAsBool("CanHearSomething", true);
+				}
+			}
+			else
+			{
+				// Minor fear reaction - not a specific fear but still causes some concern
+				m_SoundLocation = stimulus.StimulusLocation;
+      
+				if (Blackboard)	
+				{
+					Blackboard->SetValueAsBool("CanHearSomething", false);
+					Blackboard->SetValueAsBool("IsInvestigating", false);
+           
+					Blackboard->SetValueAsVector("LastHeardLocation", m_SoundLocation);
+					AGuardCharacter* NPC{Cast<AGuardCharacter>(GetPawn())};
+          
+					// Smaller fear increase for non-specific sounds
+					int32 MinorFearIncrease = FMath::RandRange(0, 1);
+					NPC->AddFearLevel(MinorFearIncrease);
+          
+					Blackboard->SetValueAsBool("CanHearSomething", true);
+				}
 			}
 		}
 	}

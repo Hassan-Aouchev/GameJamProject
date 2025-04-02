@@ -45,6 +45,6 @@ private:
 	bool bHasWon{};
 
 	FTimerHandle CaptureTimerHandle;  // Timer for continuous AI pulling
-
+	
 	void UpdateCaptureProgress(AGuardCharacter* GuardAI); // Called every second during capture
 };

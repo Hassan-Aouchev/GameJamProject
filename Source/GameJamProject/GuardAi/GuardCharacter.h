@@ -42,6 +42,8 @@ public:
 	bool GetSmoothOperator();
 	void Stun();
 
+	TArray<FName> GetFearNames() const;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -69,6 +71,9 @@ private:
 	
 	int32 m_FearLevel{};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="AI", meta = (AllowPrivateAccess = "true"))
+	TArray<FName> Fears;
+	
 	bool FearHastStruck{};
 	bool DoItOnce{};
 	

@@ -18,6 +18,8 @@ class GAMEJAMPROJECT_API AGuardAIController : public AAIController
 public:
 	explicit AGuardAIController(const FObjectInitializer& ObjectInitializer);
 
+	void ResetHeardStimuli();
+
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
@@ -38,5 +40,5 @@ private:
 
 	float m_CurrentSoundVolume{};
 	FVector m_SoundLocation{};
-	int32 m_HeardTimes{};
+	TSet<FName> m_PreviouslyHeardStimuli;
 };
