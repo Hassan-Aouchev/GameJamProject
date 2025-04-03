@@ -2,11 +2,11 @@
 
 #include "GuardCharacter.h"
 #include "GuardAIController.h"
+#include "PathPoints.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameJamProject/GhostCharacter.h"
 #include "Kismet/GameplayStatics.h"
-#include "Navigation/PathFollowingComponent.h"
 
 AGuardCharacter::AGuardCharacter()
 {
@@ -45,10 +45,20 @@ void AGuardCharacter::BeginPlay()
 	AIController = Cast<AGuardAIController>(GetController());
 
 	AIController->GetBlackboardComponent()->SetValueAsObject(FName("Player"), m_Player);
+
+	MaxSatisfaction = m_pPatrolPath->Num();
+}
+
+void AGuardCharacter::IncrementSatisfaction()
+{
+	if (!m_IsHunter)
+	{
+		++CurrentSatisfaction;
+	}
 }
 
 void AGuardCharacter::OnCapsuleOverlapFear(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OverlappedComponent != m_SpreadFearCapsule)
 		return;
@@ -165,6 +175,11 @@ void AGuardCharacter::Tick(float DeltaTime)
 	if(bHasSeenPlayer)
 	{
 		AIController->GetBlackboardComponent()->SetValueAsVector(FName("CurrentLocation"), m_Player->GetActorLocation());
+	}
+
+	if (CurrentSatisfaction >= MaxSatisfaction)
+	{
+		AIController->GetBlackboardComponent()->SetValueAsBool(FName("Satisfied"), true);
 	}
 
 	FVector TextLocation = GetActorLocation() + FVector(0.f, 0.f, 100.f); // Position above head

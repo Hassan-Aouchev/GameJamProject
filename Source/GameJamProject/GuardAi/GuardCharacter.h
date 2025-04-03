@@ -56,6 +56,7 @@ public:
 	void SetPossessed(bool setValue);
 
 	TArray<FName> GetFearNames() const;
+	void IncrementSatisfaction();
 
 protected:
 	virtual void BeginPlay() override;
@@ -106,6 +107,9 @@ private:
 	bool bCanSpreadFear = true;
 	bool bHasSeenPlayer{};
 
+	int32 CurrentSatisfaction{};
+	int32 MaxSatisfaction{};
+	
 	UPROPERTY()
 	AGuardAIController* AIController{nullptr};
 	
