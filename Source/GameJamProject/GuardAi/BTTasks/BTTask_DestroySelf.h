@@ -11,7 +11,7 @@ class GAMEJAMPROJECT_API UBTTask_DestroySelf : public UBTTaskNode
 
 public:
 	UBTTask_DestroySelf();
-
+	
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

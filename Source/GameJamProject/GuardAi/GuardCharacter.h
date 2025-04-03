@@ -9,6 +9,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStunned);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFearHasStruck);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFearIncrement);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSatisfied);
 
 class AGuardAIController;
 class AGhostCharacter;
@@ -42,6 +43,7 @@ public:
 	void AddFearLevel(int amountToAdd);
 
 	bool IsScared() const;
+	void Satisfied() const;
 
 	bool GetSmoothOperator();
 	void Stun();
@@ -52,6 +54,8 @@ public:
 	FOnFearHasStruck OnFeared;
 	UPROPERTY(BlueprintAssignable)
 	FOnFearIncrement OnFearInc;
+	UPROPERTY(BlueprintAssignable)
+	FSatisfied OnSatisfied;
 	UFUNCTION(BlueprintCallable, Category = "Ghost")
 	void SetPossessed(bool setValue);
 

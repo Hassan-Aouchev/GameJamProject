@@ -1,6 +1,7 @@
 ﻿#include "BTTask_DestroySelf.h"
 #include "AIController.h"
 #include "GameFramework/Pawn.h"
+#include "GameJamProject/GuardAi/GuardCharacter.h"
 
 UBTTask_DestroySelf::UBTTask_DestroySelf()
 {
@@ -18,8 +19,13 @@ EBTNodeResult::Type UBTTask_DestroySelf::ExecuteTask(UBehaviorTreeComponent& Own
 	APawn* AIPawn = AIController->GetPawn();
 	if (AIPawn)
 	{
-		AIPawn->Destroy();
-		return EBTNodeResult::Succeeded;
+		AGuardCharacter* guard = Cast<AGuardCharacter>(AIPawn);
+		if (guard)
+		{
+			guard->Satisfied();
+			AIPawn->Destroy();
+			return EBTNodeResult::Succeeded;
+		}
 	}
 
 	return EBTNodeResult::Failed;

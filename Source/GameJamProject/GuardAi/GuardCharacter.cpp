@@ -157,7 +157,7 @@ void AGuardCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(m_FearLevel >= m_MaxFearLevel&&!FearHastStruck)
+	if(m_FearLevel >= m_MaxFearLevel && !FearHastStruck)
 	{
 		FearHastStruck = true;
 		OnFeared.Broadcast();
@@ -175,11 +175,6 @@ void AGuardCharacter::Tick(float DeltaTime)
 	if(bHasSeenPlayer)
 	{
 		AIController->GetBlackboardComponent()->SetValueAsVector(FName("CurrentLocation"), m_Player->GetActorLocation());
-	}
-
-	if (CurrentSatisfaction >= MaxSatisfaction)
-	{
-		AIController->GetBlackboardComponent()->SetValueAsBool(FName("Satisfied"), true);
 	}
 
 	FVector TextLocation = GetActorLocation() + FVector(0.f, 0.f, 100.f); // Position above head
@@ -232,6 +227,14 @@ void AGuardCharacter::AddFearLevel(int amountToAdd)
 bool AGuardCharacter::IsScared() const
 {
 	return m_FearLevel >= m_MaxFearLevel;
+}
+
+void AGuardCharacter::Satisfied() const
+{
+	if (CurrentSatisfaction >= MaxSatisfaction)
+	{
+		OnSatisfied.Broadcast();
+	}
 }
 
 bool AGuardCharacter::GetSmoothOperator()
