@@ -36,6 +36,9 @@ public:
 	bool GetHasWon() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Ghost")
+	bool IsTugOfWar() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Ghost")
 	void IncreaseResistance();
 	
 private:
@@ -43,6 +46,7 @@ private:
 	float CaptureProgress{};   // AI's capture progress
 	bool bIsBeingCaptured{};   // Whether tug-of-war is active
 	bool bHasWon{};
+	bool btugOFWar{};
 
 	FTimerHandle CaptureTimerHandle;  // Timer for continuous AI pulling
 	
