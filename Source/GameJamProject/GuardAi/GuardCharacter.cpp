@@ -72,13 +72,13 @@ void AGuardCharacter::OnCapsuleOverlapFear(UPrimitiveComponent* OverlappedCompon
 		{
 			if (AGuardCharacter* NPC = Cast<AGuardCharacter>(OverlappingPawn))
 			{
-				if(!NPC->GetSmoothOperator() || NPC->m_FearLevel >= (NPC->m_MaxFearLevel / 2))
+				if(!NPC->GetSmoothOperator())
 				{
 					NPC->AddFearLevel(1);
 				}
 				else
 				{
-					this->AddFearLevel(-1);
+					//this->AddFearLevel(-1);
 				}
 			}
 		}
@@ -149,6 +149,11 @@ void AGuardCharacter::SetPossessed(bool setValue)
 	}
 }
 
+int32 AGuardCharacter::GetMaxSatisfaction()
+{
+	return MaxSatisfaction;
+}
+
 TArray<FName> AGuardCharacter::GetFearNames() const
 {
 	return Fears;
@@ -177,11 +182,6 @@ void AGuardCharacter::Tick(float DeltaTime)
 	{
 		AIController->GetBlackboardComponent()->SetValueAsVector(FName("CurrentLocation"), m_Player->GetActorLocation());
 	}
-
-	FVector TextLocation = GetActorLocation() + FVector(0.f, 0.f, 100.f); // Position above head
-	FString FearText = FString::Printf(TEXT("Fear: %d"), m_FearLevel);
-
-	DrawDebugString(GetWorld(), TextLocation, FearText, nullptr, FColor::Red, 0.f, true);
 }
 
 APathPoints* AGuardCharacter::GetDropOffLocation() const

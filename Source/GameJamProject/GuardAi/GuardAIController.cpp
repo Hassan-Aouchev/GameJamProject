@@ -92,8 +92,7 @@ void AGuardAIController::OnTargetDetected(AActor* Actor, const FAIStimulus stimu
     
 					Blackboard->SetValueAsVector("LastHeardLocation", m_SoundLocation);
 					AGuardCharacter* NPC{Cast<AGuardCharacter>(GetPawn())};
-					int32 RandomFearIncrease = FMath::RandRange(2, 4);
-					NPC->AddFearLevel(RandomFearIncrease);
+					NPC->AddFearLevel(1);
     
 					Blackboard->SetValueAsBool("CanHearSomething", true);
 				}
@@ -111,9 +110,7 @@ void AGuardAIController::OnTargetDetected(AActor* Actor, const FAIStimulus stimu
 					Blackboard->SetValueAsVector("LastHeardLocation", m_SoundLocation);
 					AGuardCharacter* NPC{Cast<AGuardCharacter>(GetPawn())};
           
-					// Smaller fear increase for non-specific sounds
-					int32 MinorFearIncrease = FMath::RandRange(0, 1);
-					NPC->AddFearLevel(MinorFearIncrease);
+					NPC->AddFearLevel(1);
           
 					Blackboard->SetValueAsBool("CanHearSomething", true);
 				}

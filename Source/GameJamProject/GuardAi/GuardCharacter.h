@@ -61,6 +61,8 @@ public:
 	FOnSatisfyIncrement OnSatisfiedincrement;
 	UFUNCTION(BlueprintCallable, Category = "Ghost")
 	void SetPossessed(bool setValue);
+	UFUNCTION(BlueprintCallable, Category = "Ghost")
+	int32 GetMaxSatisfaction();
 
 	TArray<FName> GetFearNames() const;
 	void IncrementSatisfaction();
@@ -99,7 +101,7 @@ private:
 	bool DoItOnce{};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Behaviour", meta = (AllowPrivateAccess = "true"))
-	int32 m_MaxFearLevel{10};
+	int32 m_MaxFearLevel{3};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Behaviour", meta = (AllowPrivateAccess = "true"))
 	bool m_SmoothOperator{};
