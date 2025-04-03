@@ -176,6 +176,11 @@ void AGuardCharacter::Tick(float DeltaTime)
 	{
 		AIController->GetBlackboardComponent()->SetValueAsVector(FName("CurrentLocation"), m_Player->GetActorLocation());
 	}
+	
+	if (CurrentSatisfaction >= MaxSatisfaction)
+	{
+		AIController->GetBlackboardComponent()->SetValueAsBool(FName("Satisfied"), true);
+	}
 
 	FVector TextLocation = GetActorLocation() + FVector(0.f, 0.f, 100.f); // Position above head
 	FString FearText = FString::Printf(TEXT("Fear: %d"), m_FearLevel);
