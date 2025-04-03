@@ -6,13 +6,10 @@
 #include "GameFramework/Character.h"
 #include "GuardCharacter.generated.h"
 
-<<<<<<< HEAD
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStunned);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFearHasStruck);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFearIncrement);
 
-=======
->>>>>>> parent of ab5160d (Merge branch 'master' of https://github.com/Hassan-Aouchev/GameJamProject)
 class AGuardAIController;
 class AGhostCharacter;
 class APlayerCharacter;
@@ -49,15 +46,12 @@ public:
 	bool GetSmoothOperator();
 	void Stun();
 
-<<<<<<< HEAD
 	UPROPERTY(BlueprintAssignable)
 	FOnStunned OnStunned;
 	UPROPERTY(BlueprintAssignable)
 	FOnFearHasStruck OnFeared;
 	UPROPERTY(BlueprintAssignable)
 	FOnFearIncrement OnFearInc;
-=======
->>>>>>> parent of ab5160d (Merge branch 'master' of https://github.com/Hassan-Aouchev/GameJamProject)
 	UFUNCTION(BlueprintCallable, Category = "Ghost")
 	void SetPossessed(bool setValue);
 
