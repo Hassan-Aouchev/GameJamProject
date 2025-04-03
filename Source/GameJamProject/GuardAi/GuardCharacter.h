@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GuardCharacter.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStunned)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStunned);
 
 class AGuardAIController;
 class AGhostCharacter;
