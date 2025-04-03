@@ -46,6 +46,8 @@ EBTNodeResult::Type UBTTask_IncrementPathIndex::ExecuteTask(UBehaviorTreeCompone
 				}
 
 				BlackboardComponent->SetValueAsInt(GetSelectedBlackboardKey(), (m_Direction == EDirectionType::Forward ? ++Index : --Index) % NoOfPoints);
+
+				EnemyCharacter->IncrementSatisfaction();
 				
 				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 				return EBTNodeResult::Succeeded;
