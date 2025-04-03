@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "GuardCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStunned);
+
 class AGuardAIController;
 class AGhostCharacter;
 class APlayerCharacter;
@@ -41,6 +43,9 @@ public:
 
 	bool GetSmoothOperator();
 	void Stun();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnStunned OnStunned;
 
 	UFUNCTION(BlueprintCallable, Category = "Ghost")
 	void SetPossessed(bool setValue);
