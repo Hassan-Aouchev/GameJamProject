@@ -125,9 +125,6 @@ void AGuardCharacter::ResetFearCooldown()
 void AGuardCharacter::Stun()
 {
 	AIController->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), true);
-
-	OnStunned.Broadcast();
-	
 }
 
 void AGuardCharacter::SetPossessed(bool setValue)
