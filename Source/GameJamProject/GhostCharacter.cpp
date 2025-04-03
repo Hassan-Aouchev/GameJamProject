@@ -54,11 +54,13 @@ void AGhostCharacter::UpdateCaptureProgress(AGuardCharacter* GuardAI)
 		bHasWon = false;
 		GetWorldTimerManager().ClearTimer(CaptureTimerHandle);
 		GhostSucked(GuardAI);
+		btugOFWar = false;
 		bIsBeingCaptured = false;
 	}
 	else if (CaptureProgress <= 0.0f)
 	{
 		bHasWon = true;
+		btugOFWar = false;
 		GuardAI->Stun();
 		GetWorldTimerManager().ClearTimer(CaptureTimerHandle);
 		UCharacterMovementComponent* TargetMovement{ FindComponentByClass<UCharacterMovementComponent>() };
@@ -124,6 +126,7 @@ void AGhostCharacter::StartTugOfWar(AGuardCharacter* GuardAI)
 	bIsBeingCaptured = true;
 	TugOfWarStrength = 0.0f;
 	CaptureProgress = 50.0f;
+	btugOFWar = true;
 	
 	UCharacterMovementComponent* TargetMovement{ FindComponentByClass<UCharacterMovementComponent>() };
 	if (TargetMovement)
@@ -143,4 +146,9 @@ bool AGhostCharacter::GetIsBeingCaptured() const
 bool AGhostCharacter::GetHasWon() const
 {
 	return bHasWon;
+}
+
+bool AGhostCharacter::IsTugOfWar() const
+{
+	return btugOFWar;
 }
