@@ -157,7 +157,7 @@ void AGuardCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(m_FearLevel >= m_MaxFearLevel)
+	if(m_FearLevel >= m_MaxFearLevel&&!FearHastStruck)
 	{
 		FearHastStruck = true;
 		OnFeared.Broadcast();

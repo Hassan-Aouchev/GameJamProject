@@ -107,7 +107,7 @@ private:
 	bool bCanSpreadFear = true;
 	bool bHasSeenPlayer{};
 
-	int32 CurrentSatisfaction{};
+	int32 CurrentSatisfaction{1};
 	int32 MaxSatisfaction{};
 	
 	UPROPERTY()
