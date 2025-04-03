@@ -7,6 +7,8 @@
 #include "GuardCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStunned);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFearHasStruck);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFearIncrement);
 
 class AGuardAIController;
 class AGhostCharacter;
@@ -46,7 +48,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnStunned OnStunned;
-
+	UPROPERTY(BlueprintAssignable)
+	FOnFearHasStruck OnFeared;
+	UPROPERTY(BlueprintAssignable)
+	FOnFearIncrement OnFearInc;
 	UFUNCTION(BlueprintCallable, Category = "Ghost")
 	void SetPossessed(bool setValue);
 

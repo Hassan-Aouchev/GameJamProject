@@ -150,6 +150,7 @@ void AGuardCharacter::Tick(float DeltaTime)
 	if(m_FearLevel >= m_MaxFearLevel)
 	{
 		FearHastStruck = true;
+		OnFeared.Broadcast();
 	}
 	
 	if(FearHastStruck && !DoItOnce)
@@ -210,6 +211,7 @@ int32 AGuardCharacter::GetFearLevel() const
 void AGuardCharacter::AddFearLevel(int amountToAdd)
 {
 	m_FearLevel += amountToAdd;
+	OnFearInc.Broadcast();
 }
 
 bool AGuardCharacter::IsScared() const
