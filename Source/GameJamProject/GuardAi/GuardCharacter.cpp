@@ -54,6 +54,7 @@ void AGuardCharacter::IncrementSatisfaction()
 	if (!m_IsHunter)
 	{
 		++CurrentSatisfaction;
+		OnSatisfiedincrement.Broadcast();
 	}
 }
 
